@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.AudioModule;DissonanceVoip;Unity.InputSystem;UnityEngine.PhysicsModule;UnityEngine.AIModule;Unity.RenderPipelines.HighDefinition.Runtime;UnityEngine.TextRenderingModule;UnityEngine.IMGUIModule;Unity.Netcode.Runtime;Unity.TextMeshPro;Unity.RenderPipelines.Core.Runtime">
+      <HintPath>$(GameManagedDir)/%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
