@@ -23,10 +23,6 @@ public class ControlCompanyRemakePlugin : BaseUnityPlugin
 
 	internal ManualLogSource logger;
 
-	private bool isInitialized = false;
-
-	private bool ranInitializationScripts = false;
-
 	private void Awake()
 	{
 		if (Instance == null)
@@ -37,12 +33,11 @@ public class ControlCompanyRemakePlugin : BaseUnityPlugin
 		logger.LogInfo($"Loaded {PluginName}. Patching.");
 		ApplyPatches();
 		logger.LogInfo("Completed patching. Initializing.");
-		GameObject gameObject = new GameObject("control_company_remake_config_manager");
-		gameObject.AddComponent<ConfigManager>();
-		gameObject.hideFlags = HideFlags.HideAndDontSave;
-		Object.DontDestroyOnLoad(gameObject);
+		GameObject configObject = new GameObject("control_company_remake_config_manager");
+		configObject.AddComponent<ConfigManager>();
+		configObject.hideFlags = HideFlags.HideAndDontSave;
+		Object.DontDestroyOnLoad(configObject);
 		logger.LogInfo("Completed initialization.");
-		isInitialized = true;
 	}
 
 	private void ApplyPatches()

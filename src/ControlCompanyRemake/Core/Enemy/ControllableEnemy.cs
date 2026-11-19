@@ -28,27 +28,14 @@ internal class ControllableEnemy
 	{
 		try
 		{
-			GameObject gameObject = spawnableEnemy?.enemyType?.enemyPrefab ?? null;
-			if (gameObject == null)
+			GameObject prefab = spawnableEnemy?.enemyType?.enemyPrefab;
+			if (prefab == null)
 			{
 				return null;
 			}
-			EnemyAI componentInChildren = gameObject.GetComponentInChildren<EnemyAI>();
-			string enemyName = ((componentInChildren == null) ? spawnableEnemy.enemyType.enemyName : componentInChildren.GetEnemyName());
-			return new ControllableEnemy
-			{
-				EnemyName = enemyName,
-				AIType = componentInChildren.GetType(),
-				EnemyPrefab = gameObject,
-				OverrideEnemyPrefab = false,
-				OverrideEnemySpawnLocation = false,
-				Allowlisted = componentInChildren.IsEnemyAllowlisted(),
-				CreateAndAttachEnemyControllerFunc = delegate(GameObject enemyGameObject, GameObject enemyController)
-				{
-					EnemyAI componentInChildren2 = enemyGameObject.GetComponentInChildren<EnemyAI>();
-					return componentInChildren2.GetAndAttachEnemyController(enemyController);
-				}
-			};
+
+			EnemyAI enemyAI = prefab.GetComponentInChildren<EnemyAI>();
+			return enemyAI == null ? null : Create(enemyAI, prefab, enemyAI.GetEnemyName());
 		}
 		catch (Exception)
 		{
@@ -58,21 +45,26 @@ internal class ControllableEnemy
 
 	public static ControllableEnemy FromEnemyAI(EnemyAI enemyAI)
 	{
-		GameObject enemyPrefab = enemyAI.enemyType.enemyPrefab;
-		string enemyName = ((enemyAI == null) ? enemyAI.enemyType.enemyName : enemyAI.GetEnemyName());
+		GameObject prefab = enemyAI.enemyType.enemyPrefab;
+		string enemyName = enemyAI == null ? enemyAI.enemyType.enemyName : enemyAI.GetEnemyName();
+		return Create(enemyAI, prefab, enemyName);
+	}
+
+	private static ControllableEnemy Create(EnemyAI enemyAI, GameObject prefab, string enemyName)
+	{
 		return new ControllableEnemy
 		{
 			EnemyName = enemyName,
 			AIType = enemyAI.GetType(),
-			EnemyPrefab = enemyPrefab,
-			OverrideEnemyPrefab = false,
-			OverrideEnemySpawnLocation = false,
+			EnemyPrefab = prefab,
 			Allowlisted = enemyAI.IsEnemyAllowlisted(),
-			CreateAndAttachEnemyControllerFunc = delegate(GameObject enemyGameObject, GameObject enemyController)
-			{
-				EnemyAI componentInChildren = enemyGameObject.GetComponentInChildren<EnemyAI>();
-				return componentInChildren.GetAndAttachEnemyController(enemyController);
-			}
+			CreateAndAttachEnemyControllerFunc = AttachController
 		};
+	}
+
+	private static EnemyAIController AttachController(GameObject enemyObject, GameObject controllerObject)
+	{
+		EnemyAI enemyAI = enemyObject.GetComponentInChildren<EnemyAI>();
+		return enemyAI.GetAndAttachEnemyController(controllerObject);
 	}
 }

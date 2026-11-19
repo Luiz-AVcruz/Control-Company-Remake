@@ -7,28 +7,30 @@ namespace ControlCompanyRemake.Patches;
 
 internal class LobbyListPatch
 {
-	public const char SERVER_NAME_FILTER = '\u200b';
+	private const char LobbyMarker = '\u200b';
 
 	[HarmonyPatch(typeof(MenuManager), "ConfirmHostButton")]
 	[HarmonyPrefix]
 	private static void AddServerNameChar(MenuManager __instance)
 	{
-		string text = __instance.lobbyNameInputField.text;
+		string lobbyName = __instance.lobbyNameInputField.text;
 		if (!ConfigManager.Instance.DisableModForSelf && __instance.hostSettings_LobbyPublic)
 		{
-			if (!Enumerable.Contains(text, '\u200b'))
+			if (!lobbyName.Contains(LobbyMarker))
 			{
-				text = ((text.Length > 3) ? text.Insert(text.Length - 2, '\u200b'.ToString()) : ("\u200b" + text));
+				lobbyName = lobbyName.Length > 3
+					? lobbyName.Insert(lobbyName.Length - 2, LobbyMarker.ToString())
+					: LobbyMarker + lobbyName;
 			}
-			if (!text.Trim().StartsWith("[MODDED]"))
+			if (!lobbyName.Trim().StartsWith("[MODDED]"))
 			{
-				text = "[MODDED] " + text;
+				lobbyName = "[MODDED] " + lobbyName;
 			}
-			__instance.lobbyNameInputField.text = text;
+			__instance.lobbyNameInputField.text = lobbyName;
 		}
 		else
 		{
-			__instance.lobbyNameInputField.text = text.RemoveChar('\u200b');
+			__instance.lobbyNameInputField.text = lobbyName.RemoveChar(LobbyMarker);
 		}
 	}
 }
